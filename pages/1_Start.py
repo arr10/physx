@@ -58,13 +58,4 @@ if generate_clicked:
             st.session_state["substitutions"] = {}
             st.switch_page("pages/2_Your_plan.py")
 
-saved_injuries = db.list_injuries()
-if saved_injuries:
-    with st.expander(t("start_saved_injuries_expander", n=len(saved_injuries))):
-        st.dataframe(
-            [{t("start_saved_col"): row["created_at"], t("start_injuries_col"): row["description"]}
-             for row in saved_injuries],
-            width="stretch", hide_index=True,
-        )
-
 st.caption(t("disclaimer"))

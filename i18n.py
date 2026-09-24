@@ -104,9 +104,6 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "start_error_no_plan": "Add the prescribed training plan first — that's what the "
                                "exercises are built from.",
         "start_spinner_building": "Turning your prescribed plan into home exercises…",
-        "start_saved_injuries_expander": "Injuries saved so far ({n})",
-        "start_saved_col": "Saved",
-        "start_injuries_col": "Injuries",
 
         # 1_Chat.py
         "chat_intro": "Tell us about your injury a little at a time, back and forth — we'll turn "
@@ -261,9 +258,6 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "start_open_saved_button": "저장된 계획 열기",
         "start_error_no_plan": "먼저 처방받은 운동 계획을 입력하세요 — 여기서 운동을 만듭니다.",
         "start_spinner_building": "처방받은 계획을 홈트레이닝으로 바꾸는 중…",
-        "start_saved_injuries_expander": "지금까지 저장된 부상 정보 ({n}건)",
-        "start_saved_col": "저장 시각",
-        "start_injuries_col": "부상 정보",
 
         "chat_intro": "부상에 대해 조금씩 주고받으며 알려주세요 — 대화 내용을 홈트레이닝 계획으로 "
                       "바꿔드립니다.",
