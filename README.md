@@ -3,7 +3,7 @@
 A Streamlit app that turns a doctor-prescribed rehab plan into a home workout you can
 actually do — matched to your injuries and whatever equipment you have around the house,
 with on-the-spot equipment substitution. Includes a chat-based intake as an alternative
-to filling out the form by hand.
+to filling out the form by hand. Available in English and Korean (한국어).
 
 ## Setup
 
@@ -47,6 +47,11 @@ whole flow (plan generation, equipment substitution, chat intake) with canned re
 and no API key or network calls required. Turn it off once you've added a real API key to
 get live, LLM-generated plans.
 
+The same Settings popover has a **Language** picker (English / 한국어) that switches the
+whole UI, the bundled demo exercise catalogue, and the generated PDF. With a live API key,
+it also tells the model to generate plans, substitutes, and chat replies in the selected
+language.
+
 ## App flow
 
 - **Welcome** — explains the concept.
@@ -54,4 +59,6 @@ get live, LLM-generated plans.
 - **Chat** — a conversational alternative to Start; talk through your injury with an AI
   coach instead of filling out the form.
 - **Your plan** — the generated home workout, grouped by day, with per-exercise equipment
-  substitution.
+  substitution. For each exercise, the LLM tries to match it to a demo photo and GIF from
+  the bundled exercise/stretch library; if nothing fits, a default image and video are
+  shown instead.

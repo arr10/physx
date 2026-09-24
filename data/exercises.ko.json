@@ -1,0 +1,235 @@
+{
+  "version": 2,
+  "exercises": [
+    {
+      "id": "chair-squat",
+      "name": "의자 스쿼트",
+      "category": "하체",
+      "movement_pattern": "스쿼트",
+      "target_muscles": ["대퇴사두근", "둔근", "코어"],
+      "equipment": ["바퀴 없는 튼튼한 의자"],
+      "optional_equipment": ["책을 채울 수 있는 배낭"],
+      "equipment_replacement": {
+        "바퀴 없는 튼튼한 의자": ["튼튼한 스툴", "낮고 튼튼한 벤치", "침대 가장자리(단단한 매트리스, 벽에 등을 기대고)"]
+      },
+      "replaces": ["바벨 백 스쿼트", "레그 프레스"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 12, "duration_seconds": null, "rest_seconds": 60, "tempo": "3-1-1" },
+      "instructions": [
+        "의자 앞에 어깨너비로 발을 벌리고 섭니다.",
+        "엉덩이를 뒤로 밀며 좌석에 가볍게 닿을 때까지 천천히 내려갑니다.",
+        "발뒤꿈치로 밀어내며 곧게 일어섭니다."
+      ],
+      "safety_tips": ["의자가 밀리지 않도록 벽에 붙여두세요.", "무릎이 발끝 방향을 향하도록 유지하세요."],
+      "easier_variation": "반복 사이에 의자에 완전히 앉으세요.",
+      "harder_variation": "무게가 실린 배낭을 메거나 좌석 위에서 2초간 멈추세요."
+    },
+    {
+      "id": "backpack-push-up",
+      "name": "배낭 푸시업",
+      "category": "상체 미는 동작",
+      "movement_pattern": "수평 밀기",
+      "target_muscles": ["가슴", "삼두근", "전면 삼각근"],
+      "equipment": ["책을 채울 수 있는 배낭"],
+      "optional_equipment": ["요가 매트"],
+      "equipment_replacement": {
+        "책을 채울 수 있는 배낭": ["무게추가 든 더플백", "물통 두 개를 함께 묶은 것", "무게 없이 — 맨몸 푸시업만"]
+      },
+      "replaces": ["벤치 프레스"],
+      "difficulty": "intermediate",
+      "iterations": { "sets": 3, "reps": 10, "duration_seconds": null, "rest_seconds": 90, "tempo": "2-1-1" },
+      "instructions": [
+        "배낭을 등 위쪽에 딱 맞게 멥니다.",
+        "손을 어깨보다 약간 넓게 짚고, 몸을 일직선으로 유지합니다.",
+        "가슴이 바닥에 거의 닿을 때까지 내린 후 다시 밀어 올립니다."
+      ],
+      "safety_tips": ["무게가 흔들리지 않도록 끈을 조이세요.", "팔꿈치를 몸통에서 약 45도 각도로 유지하세요."],
+      "easier_variation": "배낭을 벗거나 손을 튼튼한 테이블 가장자리에 짚으세요.",
+      "harder_variation": "발을 튼튼한 의자 위에 올리세요."
+    },
+    {
+      "id": "table-inverted-row",
+      "name": "테이블 인버티드 로우",
+      "category": "상체 당기는 동작",
+      "movement_pattern": "수평 당기기",
+      "target_muscles": ["등 상부", "광배근", "이두근"],
+      "equipment": ["식탁"],
+      "optional_equipment": ["수건"],
+      "equipment_replacement": {
+        "식탁": ["튼튼한 책상", "무겁고 낮은 커피 테이블(먼저 전체 체중을 견디는지 확인)", "빗자루 손잡이를 걸친 튼튼한 의자 두 개"]
+      },
+      "replaces": ["시티드 케이블 로우", "턱걸이", "랫 풀다운"],
+      "difficulty": "intermediate",
+      "iterations": { "sets": 3, "reps": 8, "duration_seconds": null, "rest_seconds": 90, "tempo": "2-1-2" },
+      "instructions": [
+        "테이블 아래에 등을 대고 누워 가슴이 테이블 가장자리 아래에 오도록 합니다.",
+        "어깨너비로 가장자리를 잡고, 발뒤꿈치는 바닥에, 몸은 일직선으로 유지합니다.",
+        "견갑골을 조이며 가슴을 테이블 쪽으로 당긴 후 천천히 내립니다."
+      ],
+      "safety_tips": ["무겁고 단단한 테이블만 사용하세요 — 먼저 전체 체중으로 테스트하세요.", "접이식이나 유리 테이블은 절대 사용하지 마세요."],
+      "easier_variation": "무릎을 굽히고 발을 바닥에 평평하게 둡니다.",
+      "harder_variation": "각 반복의 정점에서 2초간 멈추세요."
+    },
+    {
+      "id": "chair-dips",
+      "name": "의자 트라이셉스 딥스",
+      "category": "상체 미는 동작",
+      "movement_pattern": "수직 밀기",
+      "target_muscles": ["삼두근", "가슴", "전면 삼각근"],
+      "equipment": ["바퀴 없는 튼튼한 의자"],
+      "optional_equipment": [],
+      "equipment_replacement": {
+        "바퀴 없는 튼튼한 의자": ["튼튼한 스툴", "낮고 안정적인 벤치", "소파 가장자리(단단한 쿠션)"]
+      },
+      "replaces": ["딥스", "트라이셉스 푸시다운"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 10, "duration_seconds": null, "rest_seconds": 60, "tempo": "2-0-1" },
+      "instructions": [
+        "의자 가장자리에 앉아 엉덩이 옆 좌석을 손으로 잡습니다.",
+        "다리를 굽힌 채 엉덩이를 좌석 앞으로 밀어냅니다.",
+        "팔꿈치가 약 90도가 될 때까지 내린 후 다시 밀어 올립니다."
+      ],
+      "safety_tips": ["의자를 벽에 받쳐 고정하세요.", "어깨에 불편함이 느껴지면 90도 이전에 멈추세요."],
+      "easier_variation": "발을 의자에 더 가깝게 두세요.",
+      "harder_variation": "다리를 펴거나 발뒤꿈치를 다른 의자 위에 올리세요."
+    },
+    {
+      "id": "couch-split-squat",
+      "name": "소파 불가리안 스플릿 스쿼트",
+      "category": "하체",
+      "movement_pattern": "런지",
+      "target_muscles": ["대퇴사두근", "둔근", "내전근"],
+      "equipment": ["소파"],
+      "optional_equipment": ["물통 / 생수병"],
+      "equipment_replacement": {
+        "소파": ["바퀴 없는 튼튼한 의자", "침대 가장자리(단단한 매트리스)", "낮고 안정적인 벤치"]
+      },
+      "replaces": ["워킹 런지", "바벨 백 스쿼트"],
+      "difficulty": "intermediate",
+      "iterations": { "sets": 3, "reps": 8, "per_side": true, "duration_seconds": null, "rest_seconds": 75, "tempo": "3-0-1" },
+      "instructions": [
+        "소파를 등지고 약 두 걸음 앞에 섭니다.",
+        "뒷발의 발등을 좌석 위에 올립니다.",
+        "뒷무릎을 바닥 쪽으로 내린 후 앞발 뒤꿈치로 밀어 올라옵니다."
+      ],
+      "safety_tips": ["소파가 뒤로 밀리지 않는지 확인하세요.", "앞무릎이 안쪽으로 무너지지 않고 발 위에 있도록 유지하세요."],
+      "easier_variation": "뒷발을 바닥에 둔 일반 스플릿 스쿼트를 하세요.",
+      "harder_variation": "양손에 물통을 하나씩 드세요."
+    },
+    {
+      "id": "couch-hip-thrust",
+      "name": "소파 힙 쓰러스트",
+      "category": "하체",
+      "movement_pattern": "힙 힌지",
+      "target_muscles": ["둔근", "햄스트링"],
+      "equipment": ["소파"],
+      "optional_equipment": ["책을 채울 수 있는 배낭", "베개 / 쿠션"],
+      "equipment_replacement": {
+        "소파": ["바퀴 없는 튼튼한 의자(좌석이 마주보도록)", "침대 가장자리(단단한 매트리스)", "낮고 안정적인 벤치"]
+      },
+      "replaces": ["힙 쓰러스트"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 15, "duration_seconds": null, "rest_seconds": 60, "tempo": "1-2-2" },
+      "instructions": [
+        "바닥에 앉아 등 상부를 소파 가장자리에 기댑니다.",
+        "발을 바닥에 평평하게 두고, 정점에서 무릎이 약 90도가 되도록 합니다.",
+        "무릎부터 어깨까지 몸이 일직선이 될 때까지 엉덩이를 들어 올려 조인 후 내립니다."
+      ],
+      "safety_tips": ["허리가 과도하게 꺾이지 않도록 턱을 당기세요."],
+      "easier_variation": "어깨를 바닥에 댄 글루트 브릿지를 하세요.",
+      "harder_variation": "베개로 감싼 무게가 실린 배낭을 골반 위에 올리세요."
+    },
+    {
+      "id": "backpack-rdl",
+      "name": "배낭 루마니안 데드리프트",
+      "category": "하체",
+      "movement_pattern": "힙 힌지",
+      "target_muscles": ["햄스트링", "둔근", "허리"],
+      "equipment": ["책을 채울 수 있는 배낭"],
+      "optional_equipment": [],
+      "equipment_replacement": {
+        "책을 채울 수 있는 배낭": ["물통 두 개를 함께 든 것", "책이 든 더플백", "세제 통(한 손 버전)"]
+      },
+      "replaces": ["데드리프트", "레그 컬 머신"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 12, "duration_seconds": null, "rest_seconds": 75, "tempo": "3-1-1" },
+      "instructions": [
+        "무게가 실린 배낭의 손잡이나 끈을 잡고 허벅지 앞에 둡니다.",
+        "무릎을 살짝 굽힌 채 엉덩이를 뒤로 밀며 가방을 다리를 따라 내립니다.",
+        "햄스트링이 늘어나는 느낌이 들면 멈추고 엉덩이를 앞으로 밀며 일어섭니다."
+      ],
+      "safety_tips": ["등을 평평하게 유지하세요 — 더 내리려고 구부리지 마세요.", "손잡이가 무게를 견딜 수 있는지 확인하세요."],
+      "easier_variation": "더 가벼운 배낭을 사용하세요.",
+      "harder_variation": "한 손으로 가방을 든 한 다리 버전으로 하세요."
+    },
+    {
+      "id": "water-jug-press",
+      "name": "물통 오버헤드 프레스",
+      "category": "상체 미는 동작",
+      "movement_pattern": "수직 밀기",
+      "target_muscles": ["어깨", "삼두근", "가슴 상부"],
+      "equipment": ["물통 / 생수병"],
+      "optional_equipment": ["바퀴 없는 튼튼한 의자"],
+      "equipment_replacement": {
+        "물통 / 생수병": ["세제 통", "캔 식품 두 개(가벼운 옵션)", "양손에 든 배낭 끈"]
+      },
+      "replaces": ["오버헤드 프레스"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 12, "duration_seconds": null, "rest_seconds": 60, "tempo": "2-0-2" },
+      "instructions": [
+        "양손에 물통을 하나씩 들고 어깨 높이에 둡니다.",
+        "코어에 힘을 주고 양팔이 펴질 때까지 물통을 머리 위로 밀어 올립니다.",
+        "천천히 어깨 높이로 내립니다."
+      ],
+      "safety_tips": ["뚜껑이 단단히 잠겨 있는지 확인하세요.", "뒤로 젖히지 말고 둔근에 힘을 주세요."],
+      "easier_variation": "튼튼한 의자에 앉아서 밀거나 반만 채운 물통을 사용하세요.",
+      "harder_variation": "한 팔씩 3초간 천천히 내리며 미세요."
+    },
+    {
+      "id": "stair-calf-raise",
+      "name": "계단 카프 레이즈",
+      "category": "하체",
+      "movement_pattern": "발목 저측 굴곡",
+      "target_muscles": ["종아리"],
+      "equipment": ["계단 / 스텝"],
+      "optional_equipment": ["벽"],
+      "equipment_replacement": {
+        "계단 / 스텝": ["두껍고 안정적인 책 더미", "낮고 튼튼한 스텝 스툴", "야외 연석(야외에서 운동하는 경우)"]
+      },
+      "replaces": ["카프 레이즈 머신"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": 15, "duration_seconds": null, "rest_seconds": 45, "tempo": "1-1-3" },
+      "instructions": [
+        "발볼을 계단 가장자리에 대고 섭니다.",
+        "발뒤꿈치를 계단 아래로 내려 스트레칭합니다.",
+        "발끝으로 최대한 높이 올라간 후 천천히 내립니다."
+      ],
+      "safety_tips": ["균형을 위해 난간이나 벽을 잡으세요."],
+      "easier_variation": "평평한 바닥에서 하세요.",
+      "harder_variation": "한 다리로 카프 레이즈를 하세요."
+    },
+    {
+      "id": "wall-sit",
+      "name": "월 시트",
+      "category": "하체",
+      "movement_pattern": "등척성 스쿼트",
+      "target_muscles": ["대퇴사두근", "둔근"],
+      "equipment": ["벽"],
+      "optional_equipment": ["책을 채울 수 있는 배낭"],
+      "equipment_replacement": {
+        "벽": ["닫히고 튼튼한 문(고정된 상태)", "벽에 붙인 무겁고 평평한 가구(예: 무게가 실린 책장)"]
+      },
+      "replaces": ["레그 프레스", "바벨 백 스쿼트"],
+      "difficulty": "beginner",
+      "iterations": { "sets": 3, "reps": null, "duration_seconds": 40, "rest_seconds": 60, "tempo": null },
+      "instructions": [
+        "등을 벽에 평평하게 기댑니다.",
+        "무릎이 약 90도가 될 때까지 미끄러지듯 내려갑니다.",
+        "자세를 유지하며 편안하게 호흡합니다."
+      ],
+      "safety_tips": ["무릎이 발끝을 넘지 않고 발목 위에 오도록 유지하세요.", "무릎이 아프면 자세를 더 높이세요."],
+      "easier_variation": "무릎 각도를 더 얕게 유지하세요.",
+      "harder_variation": "무게가 실린 배낭을 무릎 위에 올려두세요."
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 """Shared HomeFit helpers: OpenAI access, equipment substitution, plan rendering."""
+import functools
 import json
 import os
 from pathlib import Path
@@ -7,12 +8,19 @@ import streamlit as st
 from openai import OpenAI
 from PIL import Image, ImageChops
 
+from i18n import LANGUAGES, get_language, set_language, t
+
 APP_DIR = Path(__file__).parent
 ASSETS_DIR = APP_DIR / "assets"   # images and video
 DATA_DIR = APP_DIR / "data"       # json catalogues, generated plans, the sqlite file
 LOGO_PATH = ASSETS_DIR / "logo.png"
 LOGO_MARK_PATH = ASSETS_DIR / "logo_mark.png"
 DEFAULT_MODEL = "gpt-6-luna"
+
+EXERCISE_MEDIA_DIRS = (ASSETS_DIR / "exercises", ASSETS_DIR / "stretches")
+DEFAULT_EXERCISE_IMAGE = ASSETS_DIR / "exercise.png"
+DEFAULT_EXERCISE_GIF = ASSETS_DIR / "default.gif"
+MEDIA_FILE_SUFFIXES = {".png", ".jpg", ".jpeg", ".gif"}
 
 # ---------------------------------------------------------------- constants
 COMMON_EQUIPMENT = [
@@ -51,30 +59,19 @@ Rules:
   restrictions or plan already in hand, training days per week, and their main goal.
 - Once you have enough to work with, say so plainly and tell them to click "Build my plan"."""
 
-CHAT_DEMO_PROMPTS = [
-    "Let's figure out your home plan. First — what's injured, and how long ago did it happen?",
-    "Got it. What does it stop you from doing right now, and has a doctor given you any "
-    "restrictions or a plan already?",
-    "Thanks. How many days a week can you train, and what's your main goal — regaining "
-    "strength, reducing pain, or getting back to a sport?",
-    "I think I have enough to build a plan — hit \"Build my plan\" below whenever you're ready.",
-]
-
 INTAKE_EXTRACT_SCHEMA = """{
   "injuries_text": str,
   "plan_text": str
 }"""
 
-DEMO_SUBSTITUTES = {
-    "substitutes": [
-        {"item": "Backpack loaded with books",
-         "why_it_works": "Gives adjustable resistance you likely already own."},
-        {"item": "Large water jug or bottle",
-         "why_it_works": "A graspable, weighted stand-in with a similar shape."},
-        {"item": "Bath towel",
-         "why_it_works": "Can be looped, gripped, or padded to change leverage without added weight."},
-    ],
-}
+
+def chat_demo_prompts() -> list[str]:
+    """Canned assistant turns for the Chat page's offline/demo conversation."""
+    return t("chat_demo_prompts")
+
+
+def demo_substitutes() -> dict:
+    return {"substitutes": t("demo_substitutes")}
 
 
 # ---------------------------------------------------------------- branding
@@ -144,6 +141,18 @@ def resolve_api_key(sidebar_key: str = "") -> str | None:
     return environment_key.strip() if environment_key and environment_key.strip() else None
 
 
+def localize_system_prompt(system_prompt: str) -> str:
+    """Append a language directive when the user has switched the UI to Korean."""
+    if get_language() == "ko":
+        return system_prompt + (
+            "\n\nRespond entirely in Korean (한국어), including any free-text inside the JSON "
+            "fields you return (names, categories, instructions, tips, descriptions). Leave "
+            "any fixed enum value exactly as specified in the schema (e.g. \"beginner\", "
+            "\"intermediate\", \"advanced\") untranslated."
+        )
+    return system_prompt
+
+
 def call_openai(api_key: str, model: str, user_prompt: str,
                 system_prompt: str = SYSTEM_PROMPT) -> dict:
     client = OpenAI(api_key=api_key)
@@ -151,7 +160,7 @@ def call_openai(api_key: str, model: str, user_prompt: str,
         model=model,
         response_format={"type": "json_object"},
         messages=[
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": localize_system_prompt(system_prompt)},
             {"role": "user", "content": user_prompt},
         ],
     )
@@ -160,6 +169,9 @@ def call_openai(api_key: str, model: str, user_prompt: str,
 
 def call_openai_chat(api_key: str, model: str, messages: list[dict]):
     """Plain-text streaming completion (no JSON mode) for the chat intake page."""
+    if messages and messages[0].get("role") == "system":
+        messages = [dict(messages[0], content=localize_system_prompt(messages[0]["content"]))] \
+            + messages[1:]
     client = OpenAI(api_key=api_key)
     return client.chat.completions.create(model=model, messages=messages, stream=True)
 
@@ -207,14 +219,14 @@ def demo_adapted_instructions(exercise: dict, original_item: str, substitute_ite
             adapted_steps.append(step)
     if not replaced_any:
         adapted_steps = [
-            f"(Demo) Perform {exercise['name']} using {substitute_item} instead of "
-            f"{original_item}, following the same movement pattern as the original."
+            t("demo_adapted_fallback", name=exercise["name"], substitute=substitute_item,
+              original=original_item)
         ] + adapted_steps
     return {
         "equipment": [substitute_item],
         "instructions": adapted_steps,
         "safety_tips": exercise["safety_tips"] + [
-            f"(Demo) Check that the {substitute_item} is stable and secure before loading it."
+            t("demo_adapted_safety_tip", substitute=substitute_item)
         ],
     }
 
@@ -248,12 +260,12 @@ def get_substitutes(api_key: str | None, model: str, demo_mode: bool, exercise: 
     if curated:
         return {
             "substitutes": [
-                {"item": item, "why_it_works": "Curated substitute — matches the same setup and movement."}
+                {"item": item, "why_it_works": t("curated_substitute_why")}
                 for item in curated
             ],
         }
     if demo_mode or not api_key:
-        return DEMO_SUBSTITUTES
+        return demo_substitutes()
     return call_openai(api_key, model, build_substitute_prompt(exercise, missing_item))
 
 
@@ -280,37 +292,77 @@ def render_settings() -> tuple[str | None, str, bool]:
     # from a plain session_state entry that survives navigation.
     saved = st.session_state.get("settings_values",
                                  {"api_key": "", "model": DEFAULT_MODEL, "demo": False})
+    language_codes = list(LANGUAGES)
 
-    with st.popover("⚙ Settings", width="stretch"):
-        st.header("Settings")
-        key_input = st.text_input("OpenAI API key", type="password", key="settings_api_key",
-                                  value=saved["api_key"],
-                                  help="Leave blank to use OPENAI_API_KEY from env or secrets.")
-        model = st.text_input("Model", value=saved["model"], key="settings_model",
-                              help="Any chat model that supports JSON mode.")
-        demo_mode = st.toggle("Demo mode (no API calls)", value=saved["demo"],
+    with st.popover(t("settings_button"), width="stretch"):
+        st.header(t("settings_header"))
+        language = st.selectbox(
+            t("settings_language_label"), language_codes,
+            index=language_codes.index(get_language()),
+            format_func=lambda code: LANGUAGES[code], key="settings_language",
+        )
+        set_language(language)
+        key_input = st.text_input(t("settings_api_key_label"), type="password",
+                                  key="settings_api_key", value=saved["api_key"],
+                                  help=t("settings_api_key_help"))
+        model = st.text_input(t("settings_model_label"), value=saved["model"],
+                              key="settings_model", help=t("settings_model_help"))
+        demo_mode = st.toggle(t("settings_demo_label"), value=saved["demo"],
                               key="settings_demo_mode")
-        if st.button("Test API connection", key="settings_api_test"):
+        if st.button(t("settings_test_button"), key="settings_api_test"):
             try:
                 test_result = run_api_test(resolve_api_key(key_input), model)
-                st.success("API call succeeded. Output was also printed in the Streamlit console.")
+                st.success(t("settings_test_success"))
                 st.json(test_result)
             except Exception as error:
                 print(f"[HomeFit API test] error={error!r}", flush=True)
                 traceback.print_exc()
-                st.error(f"API test failed: {error}")
+                st.error(t("settings_test_error", error=error))
 
     st.session_state["settings_values"] = {"api_key": key_input, "model": model, "demo": demo_mode}
     return resolve_api_key(key_input), model, demo_mode
 
 
+# ---------------------------------------------------------------- exercise media
+@functools.lru_cache(maxsize=1)
+def exercise_media_catalog() -> dict[str, dict]:
+    """Map media slug -> {"label", "image", "gif"}, built from the downloaded exercise/stretch
+    photos and GIFs in assets/exercises and assets/stretches."""
+    catalog: dict[str, dict] = {}
+    for directory in EXERCISE_MEDIA_DIRS:
+        if not directory.is_dir():
+            continue
+        for file in sorted(directory.iterdir()):
+            if not file.is_file() or file.suffix.lower() not in MEDIA_FILE_SUFFIXES:
+                continue
+            entry = catalog.setdefault(file.stem, {
+                "label": file.stem.replace("-", " ").capitalize(), "image": None, "gif": None,
+            })
+            if file.suffix.lower() == ".gif":
+                entry["gif"] = file
+            else:
+                entry["image"] = file
+    return catalog
+
+
+def exercise_media_paths(media_slug: str | None) -> tuple[Path, Path]:
+    """Resolve a matched catalogue slug to (image_path, gif_path). Falls back to the generic
+    defaults when there's no match, or for whichever half (still image or GIF) it lacks."""
+    entry = exercise_media_catalog().get(media_slug or "", {})
+    return entry.get("image") or DEFAULT_EXERCISE_IMAGE, entry.get("gif") or DEFAULT_EXERCISE_GIF
+
+
 # ---------------------------------------------------------------- plan rendering
-def group_by_day(exercises: list[dict]) -> dict[str, list[dict]]:
-    """Group plan exercises into {"Day 1": [...], ...}, keeping the given order."""
+def group_by_day(exercises: list[dict], language: str | None = None) -> dict[str, list[dict]]:
+    """Group plan exercises into {"Day 1": [...], ...}, keeping the given order.
+
+    `language` defaults to the active session language; pdf_export.py passes it
+    explicitly since a PDF is built for a specific language, not the live session.
+    """
     days: dict[str, list[dict]] = {}
     for exercise in exercises:
         raw_day = exercise.get("day", 1)
-        label = raw_day if isinstance(raw_day, str) else f"Day {raw_day}"
+        label = raw_day if isinstance(raw_day, str) else t("day_label", n=raw_day, lang=language)
         days.setdefault(label, []).append(exercise)
     return days
 
@@ -358,7 +410,7 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
     """Render a plan (exercises in plan.json shape) with a day picker and substitutions."""
     days_map = group_by_day(exercises)
     if not days_map:
-        st.info("This plan has no exercises yet.")
+        st.info(t("no_plan_exercises"))
         return
     selected_day = render_day_picker(list(days_map))
     st.session_state.setdefault("substitutions", {})
@@ -387,15 +439,13 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
     for exercise in days_map[selected_day]:
         exercise_id = exercise["id"]
         iterations = exercise["iterations"]
-        prescription = f"{iterations['sets']} sets"
         if iterations.get("duration_seconds"):
-            prescription += f" x {iterations['duration_seconds']} seconds"
+            prescription = t("prescription_duration", sets=iterations["sets"],
+                             seconds=iterations["duration_seconds"])
         else:
-            prescription += f" x {iterations['reps']} reps"
-        exercise_label = (
-            f"{exercise['name']}  ·  {prescription}  ·  "
-            f"Rest {iterations['rest_seconds']} s"
-        )
+            prescription = t("prescription_reps", sets=iterations["sets"], reps=iterations["reps"])
+        exercise_label = t("exercise_label", name=exercise["name"], prescription=prescription,
+                           rest=iterations["rest_seconds"])
 
         sub_state = st.session_state["substitutions"].get(exercise_id)
         active_equipment = exercise["equipment"]
@@ -411,14 +461,15 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
             st.caption(f"{exercise['category']} · {exercise['difficulty'].title()}")
             media_col, details_col = st.columns([1, 2])
             with media_col:
-                st.image(ASSETS_DIR / "exercise.png", caption="Exercise demo")
-                st.image(ASSETS_DIR / "situp.gif", caption="Movement video")
+                image_path, gif_path = exercise_media_paths(exercise.get("media"))
+                st.image(image_path, caption=t("exercise_demo_caption"))
+                st.image(gif_path, caption=t("movement_video_caption"))
             with details_col:
-                st.markdown("**Instructions**")
+                st.markdown(f"**{t('instructions_heading')}**")
                 st.markdown("\n".join(f"{i}. {step}" for i, step in enumerate(active_instructions, 1)))
 
-                st.markdown("**Equipment**")
-                st.caption("Click on missing pieces of equipment")
+                st.markdown(f"**{t('equipment_heading')}**")
+                st.caption(t("equipment_click_hint"))
                 swapped_item = sub_state.get("original_item") if sub_state else None
                 if exercise["equipment"]:
                     with st.container(key=f"equip_row_{exercise_id}"):
@@ -435,24 +486,24 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                                     }
                                 st.rerun()
                     if sub_state and sub_state.get("chosen"):
-                        st.caption("Using instead: " + ", ".join(active_equipment))
+                        st.caption(t("using_instead_caption", items=", ".join(active_equipment)))
                 else:
-                    st.caption("No equipment needed")
+                    st.caption(t("no_equipment_needed"))
 
                 sub_state = st.session_state["substitutions"].get(exercise_id)
                 if sub_state and sub_state.get("original_item") and not sub_state.get("chosen"):
                     original_item = sub_state["original_item"]
                     if sub_state["options"] is None:
-                        with st.spinner(f"Finding substitutes for {original_item}…"):
+                        with st.spinner(t("finding_substitutes_spinner", item=original_item)):
                             try:
                                 sub_state["options"] = get_substitutes(
                                     api_key, model, demo_mode, exercise, original_item
                                 ).get("substitutes", [])
                             except Exception as e:
-                                st.error(f"Couldn't fetch substitutes: {e}")
+                                st.error(t("couldnt_fetch_substitutes", error=e))
                                 sub_state["options"] = []
 
-                    st.info("You can substitute this equipment with this at home instead:")
+                    st.info(t("substitute_info"))
                     for opt in sub_state["options"]:
                         opt_label = opt.get("item", "")
                         if not opt_label:
@@ -460,7 +511,7 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                         if st.button(opt_label, key=f"sub_opt_{exercise_id}_{opt_label}"):
                             updated_state = st.session_state["substitutions"][exercise_id]
                             updated_state["chosen"] = opt_label
-                            with st.spinner("Updating instructions…"):
+                            with st.spinner(t("updating_instructions_spinner")):
                                 try:
                                     adapted = get_adapted_instructions(
                                         api_key, model, demo_mode, exercise, original_item, opt_label
@@ -469,22 +520,21 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                                         adapted["instructions"] = [adapted["instructions"]]
                                     updated_state["adapted"] = adapted
                                 except Exception as e:
-                                    st.error(f"Couldn't adapt instructions: {e}")
+                                    st.error(t("couldnt_adapt_instructions", error=e))
                                     updated_state["adapted"] = None
                             st.rerun()
                         if opt.get("why_it_works"):
                             st.caption(opt["why_it_works"])
 
                 if sub_state and sub_state.get("chosen"):
-                    st.success(
-                        f"Using **{sub_state['chosen']}** instead of **{sub_state['original_item']}**."
-                    )
-                    if st.button("Reset to original equipment", key=f"reset_{exercise_id}"):
+                    st.success(t("using_chosen_success", chosen=sub_state["chosen"],
+                                 original=sub_state["original_item"]))
+                    if st.button(t("reset_equipment_button"), key=f"reset_{exercise_id}"):
                         del st.session_state["substitutions"][exercise_id]
                         st.rerun()
 
-                st.markdown(f"**Targets:** {', '.join(exercise['target_muscles'])}")
+                st.markdown(t("targets_label", muscles=", ".join(exercise["target_muscles"])))
                 for safety_tip in active_safety_tips:
                     st.warning(safety_tip, icon="⚠️")
-                st.info(f"**Easier variation:** {exercise['easier_variation']}\n\n"
-                        f"**Harder variation:** {exercise['harder_variation']}")
+                st.info(t("variations_info", easier=exercise["easier_variation"],
+                         harder=exercise["harder_variation"]))

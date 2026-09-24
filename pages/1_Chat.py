@@ -8,14 +8,14 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 import db  # noqa: E402
 import planner  # noqa: E402
-from core import (CHAT_DEMO_PROMPTS, CHAT_INTAKE_SYSTEM_PROMPT, call_openai_chat,  # noqa: E402
+from core import (CHAT_INTAKE_SYSTEM_PROMPT, call_openai_chat, chat_demo_prompts,  # noqa: E402
                   current_settings, extract_intake_from_chat)
+from i18n import t  # noqa: E402
 
 api_key, model, demo_mode = current_settings()
 offline = demo_mode or not api_key
 
-st.write("Tell us about your injury a little at a time, back and forth — we'll turn the "
-         "conversation into a home training plan.")
+st.write(t("chat_intro"))
 
 st.session_state.setdefault("chat_messages", [])
 messages = st.session_state["chat_messages"]
@@ -26,10 +26,9 @@ for message in messages:
 
 if not messages:
     with st.chat_message("assistant"):
-        st.write(CHAT_DEMO_PROMPTS[0] if offline else
-                 "Hi! What's injured, and how long ago did it happen?")
+        st.write(chat_demo_prompts()[0] if offline else t("chat_greeting_online"))
 
-prompt = st.chat_input("Tell me what's going on…")
+prompt = st.chat_input(t("chat_input_placeholder"))
 if prompt:
     messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -37,8 +36,9 @@ if prompt:
 
     with st.chat_message("assistant"):
         if offline:
+            demo_prompts = chat_demo_prompts()
             turn = sum(1 for m in messages if m["role"] == "user") - 1
-            reply = CHAT_DEMO_PROMPTS[min(turn, len(CHAT_DEMO_PROMPTS) - 1)]
+            reply = demo_prompts[min(turn, len(demo_prompts) - 1)]
             st.write(reply)
         else:
             chat_payload = [{"role": "system", "content": CHAT_INTAKE_SYSTEM_PROMPT}] + messages
@@ -46,23 +46,23 @@ if prompt:
     messages.append({"role": "assistant", "content": reply})
 
 st.divider()
-if st.button("Build my plan from this conversation →", type="primary", disabled=not messages):
-    with st.spinner("Turning your conversation into a plan…"):
+if st.button(t("chat_build_button"), type="primary", disabled=not messages):
+    with st.spinner(t("chat_spinner_building")):
         try:
             if offline:
                 injuries_text = " ".join(m["content"] for m in messages if m["role"] == "user")
-                plan_text = "(From chat) See the conversation above for context."
+                plan_text = t("chat_from_chat_plan_text")
             else:
                 intake = extract_intake_from_chat(api_key, model, messages)
                 injuries_text = intake.get("injuries_text", "")
-                plan_text = intake.get("plan_text", "") or "(From chat) See the conversation above."
+                plan_text = intake.get("plan_text", "") or t("chat_from_chat_plan_text_fallback")
             intake_id = db.save_intake(injuries_text, plan_text)
             st.session_state["intake_id"] = intake_id
             plan = planner.generate_plan(api_key, model, demo_mode, injuries_text, plan_text)
             planner.save_plan(plan)
             db.attach_generated_plan(intake_id, plan)
         except Exception as error:
-            st.error(f"Couldn't build the plan: {error}")
+            st.error(t("couldnt_build_plan", error=error))
             plan = None
     if plan:
         st.session_state.pop("selected_day", None)

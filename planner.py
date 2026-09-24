@@ -6,7 +6,8 @@ import json
 import re
 from pathlib import Path
 
-from core import DATA_DIR, call_openai
+from core import DATA_DIR, call_openai, exercise_media_catalog
+from i18n import get_language
 
 TEMPLATE_PATH = DATA_DIR / "plan.json"
 GENERATED_PLAN_PATH = DATA_DIR / "generated_plan.json"
@@ -52,6 +53,22 @@ PLAN_SCHEMA = """{
       "easier_variation": str,
       "harder_variation": str
     }
+  ]
+}"""
+
+MEDIA_MATCH_SYSTEM_PROMPT = """You match training-plan exercises to stock demonstration images from a
+fixed catalogue.
+Rules:
+- Only match an exercise to a catalogue entry that shows the SAME movement: same joint action,
+  same equipment or setup — not just the same body part or category.
+- Slugs are IDs, not text: copy them exactly as given, never translate or alter them.
+- Use null when nothing in the catalogue genuinely depicts the exercise's movement — a loose or
+  partial match is worse than no image at all.
+- Respond with ONLY a valid JSON object that follows the schema you are given. No markdown."""
+
+MEDIA_MATCH_SCHEMA = """{
+  "matches": [
+    {"id": str, "media": str | null}
   ]
 }"""
 
@@ -185,7 +202,8 @@ def normalize_plan(data: dict) -> dict:
 
 def demo_plan() -> dict:
     """Plan built from the bundled catalogue, so the flow works without an API key."""
-    with (DATA_DIR / "exercises.json").open(encoding="utf-8") as catalogue_file:
+    catalogue_name = "exercises.ko.json" if get_language() == "ko" else "exercises.json"
+    with (DATA_DIR / catalogue_name).open(encoding="utf-8") as catalogue_file:
         catalogue = json.load(catalogue_file)["exercises"]
     exercises = []
     for index, source in enumerate(catalogue[:9]):
@@ -193,6 +211,55 @@ def demo_plan() -> dict:
         exercise["day"] = index // 3 + 1
         exercises.append(normalize_exercise(exercise, index))
     return {"exercises": exercises}
+
+
+def build_media_match_prompt(exercises: list[dict], catalog: dict[str, dict]) -> str:
+    catalog_lines = "\n".join(f"- {slug}: {entry['label']}" for slug, entry in catalog.items())
+    exercise_lines = "\n".join(
+        f"- id={exercise['id']}, name=\"{exercise['name']}\", category={exercise['category']}, "
+        f"movement_pattern={exercise['movement_pattern']}"
+        for exercise in exercises
+    )
+    return (
+        "Catalogue of available demonstration images, one per slug:\n"
+        f"{catalog_lines}\n\n"
+        "Exercises from a training plan:\n"
+        f"{exercise_lines}\n\n"
+        "For each exercise, return its id and the single catalogue slug that best depicts its "
+        "movement, or null if none genuinely do.\n\n"
+        f"Return JSON with this schema:\n{MEDIA_MATCH_SCHEMA}"
+    )
+
+
+def match_exercise_media(api_key: str | None, model: str, demo_mode: bool,
+                         exercises: list[dict]) -> dict[str, str | None]:
+    """Exercise id -> best-matching media catalogue slug, chosen by the model.
+
+    Returns no matches (so every exercise falls back to the generic default image/GIF) when
+    running offline in demo mode, since that path never calls the API.
+    """
+    catalog = exercise_media_catalog()
+    if demo_mode or not api_key or not catalog:
+        return {}
+    try:
+        raw = call_openai(api_key, model, build_media_match_prompt(exercises, catalog),
+                          system_prompt=MEDIA_MATCH_SYSTEM_PROMPT)
+    except Exception:
+        return {}
+    valid_ids = {exercise["id"] for exercise in exercises}
+    matches: dict[str, str | None] = {}
+    for row in raw.get("matches", []) if isinstance(raw, dict) else []:
+        if isinstance(row, dict) and row.get("id") in valid_ids and row.get("media") in catalog:
+            matches[row["id"]] = row["media"]
+    return matches
+
+
+def attach_exercise_media(api_key: str | None, model: str, demo_mode: bool, plan: dict) -> dict:
+    """Set each exercise's "media" field to its matched catalogue slug, or None."""
+    matches = match_exercise_media(api_key, model, demo_mode, plan["exercises"])
+    for exercise in plan["exercises"]:
+        exercise["media"] = matches.get(exercise["id"])
+    return plan
 
 
 def save_plan(plan: dict, path: Path = GENERATED_PLAN_PATH) -> Path:
@@ -213,7 +280,9 @@ def generate_plan(api_key: str | None, model: str, demo_mode: bool,
                   injuries_text: str, plan_text: str) -> dict:
     """Send the prescribed plan to GPT and return exercises in plan.json shape."""
     if demo_mode or not api_key:
-        return demo_plan()
-    raw = call_openai(api_key, model, build_plan_prompt(injuries_text, plan_text),
-                      system_prompt=PLAN_SYSTEM_PROMPT)
-    return normalize_plan(raw)
+        plan = demo_plan()
+    else:
+        raw = call_openai(api_key, model, build_plan_prompt(injuries_text, plan_text),
+                          system_prompt=PLAN_SYSTEM_PROMPT)
+        plan = normalize_plan(raw)
+    return attach_exercise_media(api_key, model, demo_mode, plan)
