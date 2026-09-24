@@ -1,0 +1,8 @@
+.streamlit/secrets.toml
+__pycache__/
+data/physx.db
+data/generated_plan.json
+assets/logo_mark.png
+.claude/settings.local.json
+.agents/
+.claude/skills/

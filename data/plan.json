@@ -1,0 +1,40 @@
+{
+  "exercises": [
+    {
+      "id": "chair-squat",
+      "day": 1,
+      "name": "Chair squat",
+      "category": "Lower body",
+      "movement_pattern": "Squat",
+      "target_muscles": ["Quadriceps", "Glutes", "Core"],
+      "equipment": ["Sturdy chair (no wheels)"],
+      "optional_equipment": ["Backpack (can be loaded with books)"],
+      "equipment_replacement": {
+        "Sturdy chair (no wheels)": [
+          "Sturdy stool",
+          "Low, sturdy bench",
+          "Bed edge (firm mattress, back against a wall)"
+        ]
+      },
+      "difficulty": "beginner",
+      "iterations": {
+        "sets": 3,
+        "reps": 12,
+        "duration_seconds": null,
+        "rest_seconds": 60,
+        "tempo": "3-1-1"
+      },
+      "instructions": [
+        "Stand in front of the chair, feet shoulder-width apart.",
+        "Push hips back and lower slowly until you lightly touch the seat.",
+        "Drive through your heels to stand up tall."
+      ],
+      "safety_tips": [
+        "Push the chair against a wall so it can't slide.",
+        "Keep knees tracking over your toes."
+      ],
+      "easier_variation": "Sit fully on the chair between reps.",
+      "harder_variation": "Wear a loaded backpack or pause 2 seconds above the seat."
+    }
+  ]
+}
