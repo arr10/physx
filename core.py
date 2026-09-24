@@ -295,7 +295,7 @@ def render_settings() -> tuple[str | None, str, bool]:
                                  {"api_key": "", "model": DEFAULT_MODEL, "demo": False})
     language_codes = list(LANGUAGES)
 
-    with st.popover(t("settings_button"), width="stretch"):
+    with st.popover(t("settings_button"), icon=":material/settings:", width="stretch"):
         st.header(t("settings_header"))
         language = st.selectbox(
             t("settings_language_label"), language_codes,
@@ -372,37 +372,12 @@ def render_day_picker(days: list[str]) -> str:
     if "selected_day" not in st.session_state or st.session_state["selected_day"] not in days:
         st.session_state["selected_day"] = days[0]
 
-    st.markdown(
-        """
-        <style>
-        div[class*="st-key-day_picker"] div[data-testid="stButton"] button {
-            aspect-ratio: 1 / 1;
-            width: 100%;
-            max-width: 3.6rem;
-            min-height: 0;
-            padding: 0;
-            font-size: 0.8rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        div[class*="st-key-day_picker"] div[data-testid="stHorizontalBlock"] {
-            gap: 0.4rem;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
+    selected = st.segmented_control(
+        t("day_picker_label"), days, default=st.session_state["selected_day"],
+        label_visibility="collapsed", width="stretch", key="day_picker",
     )
-
-    with st.container(key="day_picker"):
-        # One narrow column per day plus a filler, so the squares stay the same
-        # small size and sit together whether there are 3 days or 7.
-        cols = st.columns([1] * len(days) + [max(1, 10 - len(days))], gap="small")
-        for col, day in zip(cols, days):
-            is_selected = day == st.session_state["selected_day"]
-            if col.button(day, key=f"day_btn_{day}", width="stretch",
-                          type="primary" if is_selected else "secondary"):
-                st.session_state["selected_day"] = day
-                st.rerun()
+    if selected:
+        st.session_state["selected_day"] = selected
 
     return st.session_state["selected_day"]
 
@@ -411,7 +386,7 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
     """Render a plan (exercises in plan.json shape) with a day picker and substitutions."""
     days_map = group_by_day(exercises)
     if not days_map:
-        st.info(t("no_plan_exercises"))
+        st.info(t("no_plan_exercises"), icon=":material/info:")
         return
     selected_day = render_day_picker(list(days_map))
     st.session_state.setdefault("substitutions", {})
@@ -421,16 +396,12 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
         <style>
         div[class*="st-key-equip_row_"] div[data-testid="stButton"] button {
             width: auto;
-            aspect-ratio: unset;
             padding: 0.05rem 0.55rem;
             font-size: 0.95rem;
             font-weight: 400;
             min-height: 1.6rem;
             line-height: 1.5;
             border-radius: 0.4rem;
-        }
-        div[class*="st-key-equip_row_"] div[data-testid="stHorizontalBlock"] {
-            gap: 0.5rem;
         }
         </style>
         """,
@@ -458,7 +429,7 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                 active_instructions = sub_state["adapted"]["instructions"]
             active_safety_tips = sub_state["adapted"].get("safety_tips") or active_safety_tips
 
-        with st.expander(exercise_label):
+        with st.expander(exercise_label, icon=":material/fitness_center:"):
             st.caption(f"{exercise['category']} · {exercise['difficulty'].title()}")
             media_col, details_col = st.columns([1, 2])
             with media_col:
@@ -466,19 +437,18 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                 st.image(image_path, caption=t("exercise_demo_caption"))
                 st.image(gif_path, caption=t("movement_video_caption"))
             with details_col:
-                st.markdown(f"**{t('instructions_heading')}**")
+                st.markdown(f":material/list_alt: **{t('instructions_heading')}**")
                 st.markdown("\n".join(f"{i}. {step}" for i, step in enumerate(active_instructions, 1)))
 
-                st.markdown(f"**{t('equipment_heading')}**")
+                st.markdown(f":material/inventory_2: **{t('equipment_heading')}**")
                 st.caption(t("equipment_click_hint"))
                 swapped_item = sub_state.get("original_item") if sub_state else None
                 if exercise["equipment"]:
-                    with st.container(key=f"equip_row_{exercise_id}"):
-                        equip_cols = st.columns(len(exercise["equipment"]))
-                        for col, item in zip(equip_cols, exercise["equipment"]):
+                    with st.container(key=f"equip_row_{exercise_id}", horizontal=True, gap="small"):
+                        for item in exercise["equipment"]:
                             crossed_out = item == swapped_item
                             label = f"~~{item}~~" if crossed_out else item
-                            if col.button(label, key=f"equip_btn_{exercise_id}_{item}"):
+                            if st.button(label, key=f"equip_btn_{exercise_id}_{item}"):
                                 if crossed_out:  # clicking it again brings the item back
                                     del st.session_state["substitutions"][exercise_id]
                                 else:
@@ -504,7 +474,7 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
                                 st.error(t("couldnt_fetch_substitutes", error=e))
                                 sub_state["options"] = []
 
-                    st.info(t("substitute_info"))
+                    st.info(t("substitute_info"), icon=":material/swap_horiz:")
                     for opt in sub_state["options"]:
                         opt_label = opt.get("item", "")
                         if not opt_label:
@@ -529,13 +499,13 @@ def render_daily_plan(exercises: list[dict], api_key: str | None, model: str, de
 
                 if sub_state and sub_state.get("chosen"):
                     st.success(t("using_chosen_success", chosen=sub_state["chosen"],
-                                 original=sub_state["original_item"]))
+                                 original=sub_state["original_item"]), icon=":material/check_circle:")
                     if st.button(t("reset_equipment_button"), key=f"reset_{exercise_id}"):
                         del st.session_state["substitutions"][exercise_id]
                         st.rerun()
 
                 st.markdown(t("targets_label", muscles=", ".join(exercise["target_muscles"])))
                 for safety_tip in active_safety_tips:
-                    st.warning(safety_tip, icon="⚠️")
+                    st.warning(safety_tip, icon=":material/warning:")
                 st.info(t("variations_info", easier=exercise["easier_variation"],
-                         harder=exercise["harder_variation"]))
+                         harder=exercise["harder_variation"]), icon=":material/tune:")

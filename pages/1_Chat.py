@@ -45,8 +45,8 @@ if prompt:
             reply = st.write_stream(call_openai_chat(api_key, model, chat_payload))
     messages.append({"role": "assistant", "content": reply})
 
-st.divider()
-if st.button(t("chat_build_button"), type="primary", disabled=not messages):
+if st.button(t("chat_build_button"), icon=":material/arrow_forward:",
+             type="primary", disabled=not messages):
     with st.spinner(t("chat_spinner_building")):
         try:
             if offline:

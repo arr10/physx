@@ -1,4 +1,5 @@
 .streamlit/secrets.toml
+.venv/
 __pycache__/
 data/physx.db
 data/generated_plan.json

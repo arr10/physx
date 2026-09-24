@@ -24,7 +24,7 @@ STRINGS = {
         "couldnt_build_plan": "Couldn't build the plan: {error}",
 
         # settings popover
-        "settings_button": "⚙ Settings",
+        "settings_button": "Settings",
         "settings_header": "Settings",
         "settings_language_label": "Language",
         "settings_api_key_label": "OpenAI API key",
@@ -38,6 +38,7 @@ STRINGS = {
         "settings_test_error": "API test failed: {error}",
 
         # daily plan / equipment substitution (core.py)
+        "day_picker_label": "Choose day",
         "day_label": "Day {n}",
         "no_plan_exercises": "This plan has no exercises yet.",
         "instructions_heading": "Instructions",
@@ -71,8 +72,8 @@ STRINGS = {
             "3. **Swap out anything you don't have** — HomeFit suggests household substitutes on "
             "the spot."
         ),
-        "welcome_get_started_button": "Get started →",
-        "welcome_chat_button": "Or chat with our AI coach →",
+        "welcome_get_started_button": "Get started",
+        "welcome_chat_button": "Or chat with our AI coach",
 
         # 1_Start.py
         "start_intro": "Tell us what's injured and what your doctor prescribed. We'll turn it "
@@ -99,7 +100,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
 1. Prone hamstring curls — 3 x 12 reps, 45 s rest
 2. Bird dog — 3 x 30 s hold each side, 30 s rest
 3. Standing calf raises — 3 x 15 reps, 45 s rest""",
-        "start_build_button": "Build my plan →",
+        "start_build_button": "Build my plan",
         "start_open_saved_button": "Open my saved plan",
         "start_error_no_plan": "Add the prescribed training plan first — that's what the "
                                "exercises are built from.",
@@ -120,7 +121,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
             "I think I have enough to build a plan — hit \"Build my plan\" below whenever you're "
             "ready.",
         ],
-        "chat_build_button": "Build my plan from this conversation →",
+        "chat_build_button": "Build my plan from this conversation",
         "chat_spinner_building": "Turning your conversation into a plan…",
         "chat_from_chat_plan_text": "(From chat) See the conversation above for context.",
         "chat_from_chat_plan_text_fallback": "(From chat) See the conversation above.",
@@ -129,7 +130,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "plan_title": "Your plan",
         "plan_warning_no_plan": "No plan yet. Start by telling us about your injuries and what "
                                 "your doctor prescribed.",
-        "plan_go_to_start_button": "← Go to the start page",
+        "plan_go_to_start_button": "Go to the start page",
         "plan_built_from_caption": "Built from your intake on {date}",
         "plan_injuries_suffix": " · Injuries: {injuries}",
         "plan_pdf_subtitle": "Injuries: {injuries}",
@@ -137,7 +138,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "plan_daily_subheader": "Daily plan",
         "plan_daily_intro": "Choose a day to see your exercises. Select an exercise to open its "
                             "instructions and media.",
-        "plan_edit_button": "← Edit injuries / prescribed plan",
+        "plan_edit_button": "Edit injuries / prescribed plan",
         "plan_download_button": "Download plan PDF",
 
         # pdf_export.py
@@ -184,7 +185,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
                       "안정적인지 확인하세요.",
         "couldnt_build_plan": "계획을 만들지 못했습니다: {error}",
 
-        "settings_button": "⚙ 설정",
+        "settings_button": "설정",
         "settings_header": "설정",
         "settings_language_label": "언어",
         "settings_api_key_label": "OpenAI API 키",
@@ -196,6 +197,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "settings_test_success": "API 호출에 성공했습니다. 결과는 Streamlit 콘솔에도 출력되었습니다.",
         "settings_test_error": "API 테스트에 실패했습니다: {error}",
 
+        "day_picker_label": "요일 선택",
         "day_label": "{n}일차",
         "no_plan_exercises": "이 계획에는 아직 운동이 없습니다.",
         "instructions_heading": "운동 방법",
@@ -227,8 +229,8 @@ Day 3 — Posterior chain (no loaded spinal flexion)
             "2. **보유한 장비, 부상, 목표에 맞춰** 홈트레이닝으로 바꿔드립니다.\n"
             "3. **없는 장비는 즉시 교체** — 홈핏이 그 자리에서 집에 있는 대체 물건을 제안합니다."
         ),
-        "welcome_get_started_button": "시작하기 →",
-        "welcome_chat_button": "AI 코치와 채팅하기 →",
+        "welcome_get_started_button": "시작하기",
+        "welcome_chat_button": "AI 코치와 채팅하기",
 
         "start_intro": "부상 부위와 의사가 처방한 계획을 알려주세요. 실제로 할 수 있는 홈트레이닝으로 "
                        "바꿔드립니다.",
@@ -254,7 +256,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
 1. 엎드려 햄스트링 컬 — 3세트 x 12회, 휴식 45초
 2. 버드 독 — 좌우 3세트 x 30초 유지, 휴식 30초
 3. 서서 종아리 들기 — 3세트 x 15회, 휴식 45초""",
-        "start_build_button": "내 계획 만들기 →",
+        "start_build_button": "내 계획 만들기",
         "start_open_saved_button": "저장된 계획 열기",
         "start_error_no_plan": "먼저 처방받은 운동 계획을 입력하세요 — 여기서 운동을 만듭니다.",
         "start_spinner_building": "처방받은 계획을 홈트레이닝으로 바꾸는 중…",
@@ -272,7 +274,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
             "계획을 만들 만큼 충분한 정보를 얻은 것 같아요 — 준비되면 아래 \"내 계획 만들기\"를 "
             "눌러주세요.",
         ],
-        "chat_build_button": "이 대화로 내 계획 만들기 →",
+        "chat_build_button": "이 대화로 내 계획 만들기",
         "chat_spinner_building": "대화 내용을 계획으로 바꾸는 중…",
         "chat_from_chat_plan_text": "(채팅으로 작성됨) 자세한 내용은 위 대화를 참고하세요.",
         "chat_from_chat_plan_text_fallback": "(채팅으로 작성됨) 위 대화를 참고하세요.",
@@ -280,7 +282,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "plan_title": "내 운동 계획",
         "plan_warning_no_plan": "아직 계획이 없습니다. 부상 정보와 의사가 처방한 계획을 먼저 "
                                 "알려주세요.",
-        "plan_go_to_start_button": "← 입력 화면으로 이동",
+        "plan_go_to_start_button": "입력 화면으로 이동",
         "plan_built_from_caption": "{date}에 입력한 정보로 생성됨",
         "plan_injuries_suffix": " · 부상 정보: {injuries}",
         "plan_pdf_subtitle": "부상 정보: {injuries}",
@@ -288,7 +290,7 @@ Day 3 — Posterior chain (no loaded spinal flexion)
         "plan_daily_subheader": "일별 계획",
         "plan_daily_intro": "요일을 선택해 운동을 확인하세요. 운동을 선택하면 방법과 미디어가 "
                             "열립니다.",
-        "plan_edit_button": "← 부상 정보 / 처방 계획 수정",
+        "plan_edit_button": "부상 정보 / 처방 계획 수정",
         "plan_download_button": "PDF로 계획 다운로드",
 
         "pdf_title": "내 운동 계획",

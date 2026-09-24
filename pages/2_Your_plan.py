@@ -21,12 +21,12 @@ def plan_pdf(plan_json: str, subtitle: str, language: str) -> bytes:
 
 
 api_key, model, demo_mode = current_settings()
-st.title(t("plan_title"))
+st.title(t("plan_title"), icon=":material/calendar_month:")
 
 plan = planner.load_saved_plan()
 if not plan or not plan.get("exercises"):
-    st.warning(t("plan_warning_no_plan"))
-    if st.button(t("plan_go_to_start_button"), type="primary"):
+    st.warning(t("plan_warning_no_plan"), icon=":material/warning:")
+    if st.button(t("plan_go_to_start_button"), icon=":material/arrow_back:", type="primary"):
         st.switch_page("pages/1_Start.py")
     st.stop()
 
@@ -37,21 +37,21 @@ if intake:
     pdf_subtitle = t("plan_pdf_subtitle", injuries=injuries) if injuries else ""
     st.caption(t("plan_built_from_caption", date=intake["created_at"])
                + (t("plan_injuries_suffix", injuries=injuries) if injuries else ""))
-    with st.expander(t("plan_prescribed_expander")):
+    with st.expander(t("plan_prescribed_expander"), icon=":material/description:"):
         st.write(intake["plan_text"])
 
-st.subheader(t("plan_daily_subheader"))
+st.subheader(t("plan_daily_subheader"), icon=":material/fitness_center:")
 st.write(t("plan_daily_intro"))
 render_daily_plan(plan["exercises"], api_key, model, demo_mode)
 
-st.divider()
 left_col, right_col = st.columns([1, 1])
 with left_col:
-    if st.button(t("plan_edit_button")):
+    if st.button(t("plan_edit_button"), icon=":material/arrow_back:"):
         st.switch_page("pages/1_Start.py")
 with right_col:
     st.download_button(
         t("plan_download_button"),
+        icon=":material/download:",
         data=plan_pdf(json.dumps(plan, ensure_ascii=False, sort_keys=True), pdf_subtitle,
                       get_language()),
         file_name="training-plan.pdf",
