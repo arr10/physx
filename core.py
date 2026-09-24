@@ -115,8 +115,9 @@ def render_header(pages: list, current) -> None:
             st.image(str(LOGO_PATH), width=230)
             for page in pages:
                 is_current = page.title == getattr(current, "title", None)
-                if st.button(page.title, key=f"nav_{page.title}", width="content",
-                             type="primary" if is_current else "secondary") and not is_current:
+                label = f"**{page.title}**" if is_current else page.title
+                if st.button(label, key=f"nav_{page.title}", width="content",
+                             type="tertiary") and not is_current:
                     st.switch_page(page)
     with settings_col:
         st.session_state["settings"] = render_settings()
