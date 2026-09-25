@@ -200,15 +200,28 @@ def normalize_plan(data: dict) -> dict:
     return {"exercises": exercises}
 
 
+# Bundled catalogue exercise id -> media slug in assets/exercises. Demo mode only uses the
+# exercises listed here, so every exercise in an offline plan has a real photo/GIF.
+DEMO_EXERCISE_MEDIA = {
+    "chair-squat": "bodyweight-squat",
+    "backpack-push-up": "push-up",
+    "chair-dips": "chair-tricep-dip",
+    "couch-split-squat": "lunge",
+    "couch-hip-thrust": "glute-bridge",
+    "stair-calf-raise": "calf-raise",
+}
+
+
 def demo_plan() -> dict:
     """Plan built from the bundled catalogue, so the flow works without an API key."""
     catalogue_name = "exercises.ko.json" if get_language() == "ko" else "exercises.json"
     with (DATA_DIR / catalogue_name).open(encoding="utf-8") as catalogue_file:
         catalogue = json.load(catalogue_file)["exercises"]
+    with_media = [source for source in catalogue if source["id"] in DEMO_EXERCISE_MEDIA]
     exercises = []
-    for index, source in enumerate(catalogue[:9]):
+    for index, source in enumerate(with_media):
         exercise = {key: value for key, value in source.items() if key != "replaces"}
-        exercise["day"] = index // 3 + 1
+        exercise["day"] = index // 2 + 1
         exercises.append(normalize_exercise(exercise, index))
     return {"exercises": exercises}
 
@@ -235,11 +248,14 @@ def match_exercise_media(api_key: str | None, model: str, demo_mode: bool,
                          exercises: list[dict]) -> dict[str, str | None]:
     """Exercise id -> best-matching media catalogue slug, chosen by the model.
 
-    Returns no matches (so every exercise falls back to the generic default image/GIF) when
-    running offline in demo mode, since that path never calls the API.
+    Offline (demo mode or no API key) this uses the fixed DEMO_EXERCISE_MEDIA mapping instead
+    of calling the API; unmapped exercises fall back to the generic default image/GIF.
     """
     catalog = exercise_media_catalog()
-    if demo_mode or not api_key or not catalog:
+    if demo_mode or not api_key:
+        return {exercise["id"]: DEMO_EXERCISE_MEDIA[exercise["id"]] for exercise in exercises
+                if DEMO_EXERCISE_MEDIA.get(exercise["id"]) in catalog}
+    if not catalog:
         return {}
     try:
         raw = call_openai(api_key, model, build_media_match_prompt(exercises, catalog),

@@ -292,7 +292,7 @@ def render_settings() -> tuple[str | None, str, bool]:
     # Streamlit drops widget state when you switch pages, so the widgets are seeded
     # from a plain session_state entry that survives navigation.
     saved = st.session_state.get("settings_values",
-                                 {"api_key": "", "model": DEFAULT_MODEL, "demo": False})
+                                 {"api_key": "", "model": DEFAULT_MODEL, "demo": True})
     language_codes = list(LANGUAGES)
 
     with st.popover(t("settings_button"), icon=":material/settings:", width="stretch"):

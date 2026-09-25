@@ -42,7 +42,7 @@ Run the app:
 streamlit run app.py
 ```
 
-Then open the ⚙ Settings popover in the header and turn on **Demo mode** — this runs the
+**Demo mode** is on by default (toggle it in the ⚙ Settings popover in the header) — this runs the
 whole flow (plan generation, equipment substitution, chat intake) with canned responses
 and no API key or network calls required. Turn it off once you've added a real API key to
 get live, LLM-generated plans.
